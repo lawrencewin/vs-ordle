@@ -1,0 +1,128 @@
+@use "../imports.scss";
+
+.gameboard {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+
+    .gameboardRow {
+        display: flex;
+        flex-direction: row;
+
+        .gameboardSpace {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid imports.$dark-grey;
+            width: 4rem;
+            height: 4.25rem;
+            margin: 0.25rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            transition-property: background, border-color;
+            transition-duration: 0.5s, 0.25s;
+
+            &.correct,
+            &.partial,
+            &.incorrect {
+                border: hidden;
+                animation: boardSpin 1s linear 1;
+            }
+
+            &.correct {
+                background-color: imports.$green;
+            }
+            &.partial {
+                background-color: imports.$yellow;
+            }
+            &.incorrect {
+                background-color: imports.$dark-grey;
+            }
+
+            &.error {
+                color: imports.$light-red-2;
+                border-color: imports.$light-red-2;
+                background: none;
+                animation: shake 0.15s ease 3;
+                animation-delay: 0s !important;
+            }
+
+            &.current {
+                animation: pop 0.25s ease 1;
+                animation-delay: 0s !important;
+                border-color: imports.$light-grey;
+            }
+
+            &:nth-child(2) {
+                animation-delay: 0.2s;
+                transition-delay: 0.2s, 0s;
+            }
+
+            &:nth-child(3) {
+                animation-delay: 0.4s;
+                transition-delay: 0.4s, 0s;
+            }
+
+            &:nth-child(4) {
+                animation-delay: 0.6s;
+                transition-delay: 0.6s, 0s;
+            }
+
+            &:nth-child(5) {
+                animation-delay: 0.8s;
+                transition-delay: 0.8s, 0s;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .gameboard .gameboardRow .gameboardSpace {
+        width: 3rem;
+        height: 3.25rem;
+        font-size: 1.25rem;
+    }
+}
+
+@keyframes boardSpin {
+    0% {
+        transform: rotateX(0deg);
+    }
+    50% {
+        transform: rotateX(90deg);
+    }
+    100% {
+        transform: rotateX(0deg);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+    33% {
+        transform: translateX(-0.125rem);
+    }
+    67% {
+        transform: translateX(-0.125rem);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}

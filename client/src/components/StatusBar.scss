@@ -1,0 +1,122 @@
+@use "../imports.scss";
+
+.gameBoardStatusBar {
+    display: flex;
+    flex: 0;
+    margin-bottom: 0.5rem;
+    justify-content: center;
+    align-items: center;
+
+    &.shown {
+        animation: slideIn 0.25s ease 1 forwards;
+    }
+
+    &.hidden {
+        animation: slideOut 1s ease 1 forwards;
+    }
+
+    .loadingSpinner {
+        flex: 0 0 1rem;
+        width: 1rem;
+        height: 1rem;
+        border-style: solid;
+        border-width: 2px;
+        border-color: rgba(220, 220, 220, 0.2);
+        border-left-color: rgba(220, 220, 220, 1);
+        border-radius: 50%;
+        margin-left: 0.5rem;
+        animation: loadPop 0.25s ease 1 reverse forwards;
+
+        &.entering,
+        &.spinning,
+        &.exiting {
+            opacity: 1;
+        }
+
+        &.entering {
+            animation: loadPop 0.25s ease 1 forwards;
+        }
+
+        &.spinning {
+            animation: loadSpin 0.5s linear infinite;
+        }
+    }
+
+    .statusText,
+    .error {
+        font-size: 0.75rem;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        flex: 1;
+    }
+
+    .statusText {
+        color: imports.$white-2;
+    }
+
+    .error {
+        color: imports.$light-red-2;
+
+        span {
+            animation: errorShake 0.2s linear 3;
+            display: inline-block;
+        }
+    }
+}
+
+@keyframes loadPop {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes loadSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes errorShake {
+    0% {
+        transform: translateX(0);
+    }
+    33% {
+        transform: translateX(-2px);
+    }
+    67% {
+        transform: translateX(2px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}

@@ -1,0 +1,93 @@
+@use "../imports.scss";
+
+.lobbyId {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    margin: auto;
+
+    .text {
+        color: imports.$white-2;
+        flex: 0;
+        white-space: nowrap;
+        font-size: 1.25rem;
+        margin-right: 1rem;
+    }
+
+    button {
+        flex: 1;
+        max-width: 20rem;
+    }
+}
+
+.lobbyTable {
+    width: 90%;
+    max-width: 800px;
+    margin: 1rem auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .5rem;
+    
+    .lobbyTableItem {
+        display: flex;
+        color: imports.$white-2;
+        align-items: center;
+        background: imports.$dark-grey;
+        padding: .25rem .75rem;
+
+        .playerName {
+            white-space: nowrap;
+            margin-right: 1rem;
+        }
+
+        .leaderCommands button {
+            color: imports.$white-2;
+            background: none;
+            border: solid 1px imports.$light-grey;
+            transition: all .25s ease;
+            cursor: pointer;
+
+            &:hover { background: imports.$light-grey; }
+            &:active { transform: translateY(1px); }
+        }
+
+        .readyStatus {
+            flex: 1;
+            text-align: right;
+
+            .check { color: imports.$green; }
+            .x { color: imports.$dark-red; }
+        }
+        
+    }
+
+}
+
+.lobbyActions {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+
+    button { 
+        margin-right: .25rem;
+        margin-left: .25rem;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .lobbyTable {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .lobbyActions {
+        flex-direction: column;
+
+        button {
+            margin: .5rem auto;
+        }
+    }
+}

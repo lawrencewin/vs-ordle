@@ -1,0 +1,19 @@
+.game {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    max-height: calc(100% - 4rem);
+
+    .gamebody {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 0.5rem 0;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .game {
+        flex-direction: column;
+    }
+}

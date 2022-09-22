@@ -1,0 +1,148 @@
+@use "../../imports.scss";
+
+@mixin clearInput {
+    background: none;
+    border: solid 1px imports.$dark-grey;
+    color: imports.$white-3;
+}
+
+a.uiButton {
+    text-decoration: none;
+    color: imports.$white-3;
+}
+
+.uiButton {
+    @include clearInput;
+    text-transform: none;
+    display: block;
+    text-transform: uppercase;
+    width: 100%;
+    padding: 1rem;
+    margin: 2rem auto;
+    font-family: "Inter" sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    width: 90%;
+    cursor: pointer;
+    transition: all .25s ease;
+
+    &:hover {
+        background: imports.$dark-grey;
+    }
+
+    &:active {
+        background: imports.$light-grey;
+        transform: scale(0.99);
+    }
+
+    &:disabled {
+        color: imports.$light-grey;
+        background: none;
+        border-color: imports.$dark-grey;
+        transform: none;
+        cursor: default;
+    }
+}
+
+.uiInputGroup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    label {
+        flex: 0;
+        font-size: 16px;
+        color: imports.$white-3;
+        font-weight: 700;
+        padding: .5rem 1rem .5rem 0;
+        white-space: nowrap;
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
+
+    input {
+        flex: 1;
+    }
+}
+
+.uiTextInput, .uiNumberInput__field {
+    @include clearInput;
+    padding: 4px;
+    display: block;
+    width: 100%;
+    font-size: 1.25rem;
+}
+
+
+.uiNumberInput {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+    .uiNumberInput__field {
+        flex: 1;
+        margin-right: .25rem;
+    }
+
+    .uiNumberInput__buttons {
+        flex: 0;
+    }
+}
+
+.uiNumberInput__buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .uiNumberInput__button {
+        @include clearInput;
+        font-weight: 700;
+        font-size: .5rem;
+        padding: 0 .25rem;
+        flex: 1;
+        transition: all .25s ease;
+
+        &:nth-child(1) {
+            margin-bottom: 1px;
+            vertical-align: bottom;
+        }
+
+        &:nth-child(2) {
+            margin-top: 1px;
+            vertical-align: top;
+        }
+
+        svg { 
+            width: 12px;
+            height: 8px;
+        }
+
+        &:hover {
+            background-color: imports.$dark-grey;
+        }
+
+        &:active {
+            background-color: imports.$light-grey;
+            border-color: imports.$light-grey;
+        }
+    }
+
+}
+
+.loadingSpinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border-width: .125rem;
+    border-style: solid;
+    border-color: imports.$white-1;
+    border-left-color: imports.$light-grey;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

@@ -1,0 +1,28 @@
+.createLobby {
+    width: 90%;
+    max-width: 500px;
+    margin: .5rem auto;
+    display: flex;
+    flex-direction: column;
+
+    .numberInputs {
+        display: flex;
+        flex-direction: row;
+
+        .numberInputs__input {
+            flex: 1;
+            &:nth-child(1) { margin-right: .25rem; }
+            &:nth-child(2) { margin-left: .25rem; }
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .createLobby {
+        .numberInputs {
+            flex-direction: column;
+
+            .numberInputs__input { margin: .5rem 0; }
+        }
+    }
+}

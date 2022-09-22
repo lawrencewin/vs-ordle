@@ -1,0 +1,84 @@
+@use "../imports.scss";
+
+.playerGridItem {
+    max-width: 10rem;
+
+    .board {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0.5rem 0;
+
+        .row {
+            display: flex;
+            flex-direction: row;
+
+            .space {
+                width: 0.5rem;
+                height: 0.625rem;
+                margin: 1px;
+                background-color: imports.$light-grey;
+
+                &.incorrect {
+                    background-color: imports.$dark-grey;
+                }
+                &.partial {
+                    background-color: imports.$yellow;
+                }
+                &.correct {
+                    background-color: imports.$green;
+                }
+            }
+        }
+    }
+
+    .text {
+        .name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: imports.$white-2;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .status {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            color: imports.$white-3;
+
+            span {
+                font-size: 0.5rem;
+                vertical-align: top;
+                margin-left: 1px;
+            }
+        }
+    }
+
+    &.dead {
+        .board .row .space {
+            background-color: imports.$dark-red;
+        }
+        .name {
+            color: imports.$light-red-1;
+        }
+        .status {
+            color: imports.$light-red-2;
+        }
+    }
+
+    &.done {
+        .board .row .space {
+            background-color: imports.$dark-blue;
+        }
+        .name {
+            color: imports.$light-blue-1;
+        }
+        .status {
+            color: imports.$light-blue-2;
+        }
+    }
+}
