@@ -36,9 +36,9 @@ export enum BoardSpace {
 }
 
 export enum PlayerStatus {
-    dead = 0,
+    done = 0,
     playing = 1,
-    done = 2,
+    dead = 2,
 }
 
 export type BoardRow = BoardSpace[]

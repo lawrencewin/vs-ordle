@@ -1,4 +1,14 @@
-import { GameRules, ClientGameState, GameUpdate, GameContextInterface, GuessResult, PlayerStatus, ClientGameStateUpdate, ClientPlayerStateUpdate } from "vsordle-types"
+import {
+    GameRules,
+    ClientGameState,
+    GameUpdate,
+    GameContextInterface,
+    GuessResult,
+    PlayerStatus,
+    ClientGameStateUpdate,
+    ClientPlayerStateUpdate,
+    PlayerID,
+} from "vsordle-types"
 import { io, Socket } from "socket.io-client"
 
 let socket: Socket = {} as Socket
@@ -12,7 +22,9 @@ export const getCurrentLobby = () => {
     return currentLobby
 }
 
-export const listenToLobbyChange = (listener: (lobbyId: string | null) => any) => {
+export const listenToLobbyChange = (
+    listener: (lobbyId: string | null) => any
+) => {
     console.log(listener)
     lobbyListener = listener
     return () => {
@@ -21,9 +33,9 @@ export const listenToLobbyChange = (listener: (lobbyId: string | null) => any) =
 }
 
 export const connect = (
-    url: string, 
-    onConnect?: () => void, 
-    onDisconnect?: (reason: Socket.DisconnectReason) => void, 
+    url: string,
+    onConnect?: () => void,
+    onDisconnect?: (reason: Socket.DisconnectReason) => void,
     onError?: (err: Error) => void
 ) => {
     socket = io(url)
@@ -40,33 +52,44 @@ export const connect = (
 
 export const createLobby = (displayName: string, rules: GameRules | null) => {
     return new Promise<ClientGameState>((resolve, reject) => {
-        socket.emit("create_lobby", displayName, rules, (gameState: ClientGameState | null, err?: any) => {
-            console.log(gameState)
-            if (gameState !== null) {
-                currentLobby = gameState.lobbyId
-                console.log(lobbyListener)
-                if (lobbyListener)
-                    lobbyListener(currentLobby)
-                resolve(gameState)
-            } else {
-                reject(err)
+        socket.emit(
+            "create_lobby",
+            displayName,
+            rules,
+            (gameState: ClientGameState | null, err?: any) => {
+                console.log(gameState)
+                if (gameState !== null) {
+                    currentLobby = gameState.lobbyId
+                    console.log(lobbyListener)
+                    if (lobbyListener) lobbyListener(currentLobby)
+                    resolve(gameState)
+                } else {
+                    reject(err)
+                }
             }
-        })
+        )
     })
 }
 
 export const joinLobby = (displayName: string, lobbyId: string) => {
     return new Promise<ClientGameState>((resolve, reject) => {
-        socket.emit("join_lobby", displayName, lobbyId, (gameState: ClientGameState | null, err?: any) => {
-            if (gameState !== null) {
-                currentLobby = lobbyId
-                if (lobbyListener)
-                    lobbyListener(currentLobby)
-                resolve(gameState)
-            } else {
-                reject({ name: "JoinLobbyError", message: `Unable to join lobby ${lobbyId}.`})
+        socket.emit(
+            "join_lobby",
+            displayName,
+            lobbyId,
+            (gameState: ClientGameState | null, err?: any) => {
+                if (gameState !== null) {
+                    currentLobby = lobbyId
+                    if (lobbyListener) lobbyListener(currentLobby)
+                    resolve(gameState)
+                } else {
+                    reject({
+                        name: "JoinLobbyError",
+                        message: `Unable to join lobby ${lobbyId}.`,
+                    })
+                }
             }
-        })
+        )
     })
 }
 
@@ -76,15 +99,20 @@ export const leaveLobby = () => {
             socket.emit("leave_lobby", (success: boolean) => {
                 if (success) {
                     currentLobby = null
-                    if (lobbyListener)
-                        lobbyListener(currentLobby)
+                    if (lobbyListener) lobbyListener(currentLobby)
                     resolve()
                 } else {
-                    reject({ name: "DisconnectError", message: "Unable to disconnect from current lobby." })
+                    reject({
+                        name: "DisconnectError",
+                        message: "Unable to disconnect from current lobby.",
+                    })
                 }
             })
         } else {
-            reject({ name: "LobbyNotJoinedError", message: "Currently not connected to a lobby."})
+            reject({
+                name: "LobbyNotJoinedError",
+                message: "Currently not connected to a lobby.",
+            })
         }
     })
 }
@@ -96,11 +124,17 @@ export const readyUp = () => {
                 if (success) {
                     resolve()
                 } else {
-                    reject({ name: "ReadyError", message: "Unable to ready up in the current lobby." })
+                    reject({
+                        name: "ReadyError",
+                        message: "Unable to ready up in the current lobby.",
+                    })
                 }
             })
         } else {
-            reject({ name: "LobbyNotJoinedError", message: "Currently not connected to a lobby." })
+            reject({
+                name: "LobbyNotJoinedError",
+                message: "Currently not connected to a lobby.",
+            })
         }
     })
 }
@@ -113,14 +147,24 @@ export const startGame = () => {
                     resolve()
                 } else {
                     if (errorMessage === "not_lobby_leader") {
-                        reject({ name: "LobbyPermissionError", message: "You are not the leader of this lobby and cannot start the game."})
+                        reject({
+                            name: "LobbyPermissionError",
+                            message:
+                                "You are not the leader of this lobby and cannot start the game.",
+                        })
                     } else {
-                        reject({ name: "StartGameError", message: "Unable to start the game at this time." })
+                        reject({
+                            name: "StartGameError",
+                            message: "Unable to start the game at this time.",
+                        })
                     }
                 }
             })
         } else {
-            reject({ name: "LobbyNotJoinedError", message: "Currently not connected to a lobby." })
+            reject({
+                name: "LobbyNotJoinedError",
+                message: "Currently not connected to a lobby.",
+            })
         }
     })
 }
@@ -136,9 +180,12 @@ export const submitGuess = (guess: string) => {
                 }
             })
         } else {
-            reject({ name: "LobbyNotJoinedError", message: "Currently not connected to a lobby." })
+            reject({
+                name: "LobbyNotJoinedError",
+                message: "Currently not connected to a lobby.",
+            })
         }
-    }) 
+    })
 }
 
 const onGameUpdate = (listener: (update: GameUpdate) => void) => {
@@ -148,16 +195,13 @@ const onGameUpdate = (listener: (update: GameUpdate) => void) => {
     }
 }
 
-const getGameUpdate = (
-    update: GameUpdate
-): ClientGameStateUpdate  => {
-    console.log("new update", update)
+const getGameUpdate = (update: GameUpdate): ClientGameStateUpdate => {
     switch (update.type) {
         case "lobby_joined":
             const pid = update.player.pid
             return {
                 players: {
-                    [pid]: update.player
+                    [pid]: update.player,
                 },
                 sortedPids: update.sortedPids,
                 totalPlayers: update.playerCount,
@@ -168,53 +212,79 @@ const getGameUpdate = (
                 sortedPids: update.sortedPids,
                 totalPlayers: update.playerCount,
             }
-            
+
         case "game_status_update":
             return {
-                status: update.status
+                status: update.status,
             }
         case "ready_update":
             return {
                 players: {
                     [update.pid]: {
-                        ready: update.ready
-                    }
-                }
+                        ready: update.ready,
+                    },
+                },
             }
         case "guess_result":
             if (update.result.type === "success") {
                 const playerUpdate = update.result.update
                 let updatesToPlayer: ClientPlayerStateUpdate = {}
+                let newSortedPids: PlayerID[] | null = null
                 switch (playerUpdate.type) {
-                    case "solved": 
+                    case "solved":
                         updatesToPlayer.solved = playerUpdate.solved
+                        updatesToPlayer.board = playerUpdate.board
+                        newSortedPids = playerUpdate.sortedPids
                         break
-                    case "missed": 
+                    case "missed":
                         updatesToPlayer.missed = playerUpdate.missed
+                        updatesToPlayer.board = playerUpdate.board
+                        newSortedPids = playerUpdate.sortedPids
                         break
-                    case "won": 
+                    case "won":
                         updatesToPlayer.status = PlayerStatus.done
+                        updatesToPlayer.solved = playerUpdate.solved
                         break
                     case "lost":
                         updatesToPlayer.status = PlayerStatus.dead
                         break
+                    case "continue_guessing":
+                        updatesToPlayer.board = playerUpdate.board
+                        break
                     default:
                 }
-                return {
+                const ret: ClientGameStateUpdate = {
                     players: {
-                        [playerUpdate.pid]: updatesToPlayer
-                    }
+                        [playerUpdate.pid]: updatesToPlayer,
+                    },
                 }
+                if (newSortedPids !== null) {
+                    ret.sortedPids = newSortedPids
+                    newSortedPids.forEach((pid, i) => {
+                        const update = { position: i + 1 }
+                        if (ret.players![pid]) {
+                            ret.players![pid] = {
+                                ...ret.players![pid],
+                                ...update,
+                            }
+                        } else {
+                            ret.players![pid] = update
+                        }
+                    })
+                }
+                return ret
             } else {
                 throw update.result
             }
+            break
         default:
             throw new Error("INVALID GAME UPDATE TYPE")
     }
-    
 }
 
-export const bindGameToSocket = (listener: (update: ClientGameStateUpdate) => void) => {
+export const bindGameToSocket = (
+    listener: (update: ClientGameStateUpdate) => void
+) => {
     console.log("binding")
     onGameUpdate((update) => {
         console.log("onGameUpdate")

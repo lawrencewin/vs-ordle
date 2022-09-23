@@ -4,7 +4,7 @@ import { GAMES } from "../game/io"
 const router = Router()
 
 router.get("/lobbies", (_, res) => {
-    res.status(200).json(Object.keys(GAMES)) 
+    res.status(200).json(Object.keys(GAMES))
 })
 
 router.get("/lobbyExists/:id", (req, res) => {

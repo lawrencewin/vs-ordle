@@ -21,10 +21,14 @@ export interface ClientGameState {
 }
 
 export type ClientPlayerStateUpdate = Partial<PlayerState> | null
-export type ClientGameStateUpdate = Partial<ClientGameState> | {
+export type ClientGameStateUpdate = {
+    lobbyId?: string
     players?: {
         [pid: PlayerID]: ClientPlayerStateUpdate
     }
+    sortedPids?: PlayerID[]
+    totalPlayers?: number
+    status?: GameStatus
 }
 
 export interface LocalState {
@@ -43,12 +47,19 @@ export interface GameContextInterface {
     addChar: (char: Letter) => void
     removeChar: () => void
     submitGuess: () => void
-    setGameState: (v: (ClientGameState | null) | ((prev: ClientGameState | null) => ClientGameState | null)) => void
-    connect: (url: string, callbacks: {
-        onConnect: () => void,
-        onDisconnect: () => void,
-        onError: (error: any) => void,
-    } ) => void
+    setGameState: (
+        v:
+            | (ClientGameState | null)
+            | ((prev: ClientGameState | null) => ClientGameState | null)
+    ) => void
+    connect: (
+        url: string,
+        callbacks: {
+            onConnect: () => void
+            onDisconnect: () => void
+            onError: (error: any) => void
+        }
+    ) => void
 }
 
 export interface ConnectedGameContextInterface extends GameContextInterface {

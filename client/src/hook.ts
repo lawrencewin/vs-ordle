@@ -1,5 +1,11 @@
 import { range } from "lodash"
-import React, { useState, useRef, createContext, useContext, useEffect } from "react"
+import React, {
+    useState,
+    useRef,
+    createContext,
+    useContext,
+    useEffect,
+} from "react"
 import {
     BoardSpace,
     ClientGameState,
@@ -32,7 +38,7 @@ function useGameStates(): [
         rules: { allowedGuesses: 6, wordCount: 7, missCount: 3 },
         sortedPids: [],
         totalPlayers: 0,
-        status: "lobby"
+        status: "lobby",
     })
 
     const [localState, setLocalState] = useState<LocalState>({
@@ -219,39 +225,50 @@ export function useGame(): GameContextInterface {
 
     const guess = guessRef.current
 
-    return { 
-        localState, 
-        gameState, 
-        guess, 
-        addChar, 
-        removeChar, 
-        submitGuess, 
+    return {
+        localState,
+        gameState,
+        guess,
+        addChar,
+        removeChar,
+        submitGuess,
         setGameState,
         connect: (url, { onConnect, onDisconnect, onError }) => {
-            Network.connect(url, () => {
-                console.log("HEYYYY")
-                Network.bindGameToSocket((update) => {
-                    console.log("here's an update", update)
-                    // merge update
-                    setGameState(state => {
-                        if (state) {
-                            return {
-                                ...state,
-                                ...update,
-                                players: {
-                                    ...state.players,
-                                    ...update.players
+            Network.connect(
+                url,
+                () => {
+                    Network.bindGameToSocket((update) => {
+                        console.log("here's an update", update)
+                        // merge update
+                        setGameState((state) => {
+                            if (state) {
+                                const players = { ...state.players }
+                                if (update.players) {
+                                    for (const pid in update.players) {
+                                        players[pid] = {
+                                            ...state.players[pid],
+                                            ...update.players[pid],
+                                        }
+                                    }
                                 }
+                                const newState = {
+                                    ...state,
+                                    ...update,
+                                    players: players,
+                                }
+                                console.log("newState")
+                                console.log(newState)
+                                return newState
                             }
-                        }
-                        console.log("whoops")
-                        console.log(state)
-                        return state
+                            return state
+                        })
                     })
-                })
-                onConnect()
-            }, onDisconnect, onError)
-        }
+                    onConnect()
+                },
+                onDisconnect,
+                onError
+            )
+        },
     }
 }
 

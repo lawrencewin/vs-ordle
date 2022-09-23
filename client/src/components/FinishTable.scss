@@ -1,0 +1,45 @@
+@use "../imports.scss";
+
+.finishTable {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 35rem;
+    margin: 1rem auto;
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        font-size: 0.875rem;
+        color: imports.$white-2;
+        background: imports.$black;
+
+        .col {
+            text-align: start;
+            padding: 0.25rem;
+
+            &.position {
+                flex: 1;
+            }
+            &.name {
+                flex: 3;
+            }
+            &.solved {
+                flex: 1;
+            }
+            &.missed {
+                flex: 1;
+            }
+        }
+
+        &.rowHeader {
+            // font-size: 1rem;
+            font-weight: 700;
+            color: imports.$white-1;
+        }
+
+        &:nth-child(2n) {
+            background: imports.$dark-grey;
+        }
+    }
+}

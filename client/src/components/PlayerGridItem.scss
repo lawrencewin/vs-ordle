@@ -44,6 +44,7 @@
 
         .status {
             display: flex;
+            min-width: 8rem;
             flex-direction: row;
             justify-content: space-evenly;
             font-size: 0.75rem;

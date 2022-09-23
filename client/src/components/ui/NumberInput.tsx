@@ -26,7 +26,7 @@ export const NumberInput = (props: NumberInputProps) => {
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         const { value } = e.target
-        let val = (value !== "" && value !== "-") ? parseInt(value) : 0
+        let val = value !== "" && value !== "-" ? parseInt(value) : 0
         if (!isNaN(val)) {
             const { min, max } = rest
             if (min && val < min) {
@@ -48,40 +48,63 @@ export const NumberInput = (props: NumberInputProps) => {
             const newVal = rest.value + inc
             if (!((min && newVal < min) || (max && newVal > max))) {
                 onChange(rest.value + inc)
-            } 
+            }
         } else {
-            setN(prev => {
+            setN((prev) => {
                 const newVal = prev + inc
                 if ((min && newVal < min) || (max && newVal > max)) {
                     return prev
-                } 
+                }
                 return newVal
             })
         }
     }
 
     const inputEl = (
-        <div className={"uiNumberInput"  + (className && id.length === 0 ? " " + className : "")} style={rest.style}>
-            <input 
+        <div
+            className={
+                "uiNumberInput" +
+                (className && id.length === 0 ? " " + className : "")
+            }
+            style={rest.style}
+        >
+            <input
                 id={label ? id : undefined}
-                type="text" 
+                type="text"
                 className="uiNumberInput__field"
                 onChange={handleChange}
                 value={rest.value || n}
                 {...rest}
             />
             <div className="uiNumberInput__buttons">
-                <button onClick={handleIncrement(1)} className="uiNumberInput__button"><ChevronUp /></button>
-                <button onClick={handleIncrement(-1)} className="uiNumberInput__button"><ChevronDown /></button>
+                <button
+                    onClick={handleIncrement(1)}
+                    className="uiNumberInput__button"
+                >
+                    <ChevronUp />
+                </button>
+                <button
+                    onClick={handleIncrement(-1)}
+                    className="uiNumberInput__button"
+                >
+                    <ChevronDown />
+                </button>
             </div>
         </div>
     )
 
     if (id.length > 0) {
-        return <div className={"uiInputGroup" + (className ? " " + className : "")} style={rest.groupStyle}>
-            <label htmlFor={id} style={rest.labelStyle}>{label}</label>
-            { inputEl }
-        </div>
+        return (
+            <div
+                className={"uiInputGroup" + (className ? " " + className : "")}
+                style={rest.groupStyle}
+            >
+                <label htmlFor={id} style={rest.labelStyle}>
+                    {label}
+                </label>
+                {inputEl}
+            </div>
+        )
     } else {
         return inputEl
     }

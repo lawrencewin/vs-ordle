@@ -9,13 +9,16 @@ interface LoadingSpinnerProps {
 
 export const LoadingSpinner = (props: LoadingSpinnerProps) => {
     if (props.loading) {
-        return <div className="loadingSpinner"
-                    style={{
-                        width: props.width,
-                        height: props.width,
-                        borderWidth: props.thickness,
-                    }}
-                ></div>
+        return (
+            <div
+                className="loadingSpinner"
+                style={{
+                    width: props.width,
+                    height: props.width,
+                    borderWidth: props.thickness,
+                }}
+            ></div>
+        )
     } else {
         return null
     }

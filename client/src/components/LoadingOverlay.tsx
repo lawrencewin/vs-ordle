@@ -10,7 +10,7 @@ interface LoadingOverlayProps {
 
 export const LoadingOverlayContext = createContext({
     showLoadingOverlay: (message: string) => {},
-    hideLoadingOverlay: () => {}
+    hideLoadingOverlay: () => {},
 })
 
 export const useLoadingOverlay = () => useContext(LoadingOverlayContext)
@@ -21,7 +21,11 @@ export const LoadingOverlay = (props: LoadingOverlayProps) => {
     } else {
         return (
             <div className="loadingOverlay">
-                <LoadingSpinner loading={props.loading || true} width={48} thickness={4} />
+                <LoadingSpinner
+                    loading={props.loading || true}
+                    width={48}
+                    thickness={4}
+                />
                 <div className="message">{props.message}</div>
             </div>
         )

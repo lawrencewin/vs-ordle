@@ -14,7 +14,11 @@ export class PlayerInstance implements PlayerState {
     currWord: string
     guesses: number
 
-    constructor(id: string, displayName: string, isLobbyLeader: boolean = false) {
+    constructor(
+        id: string,
+        displayName: string,
+        isLobbyLeader: boolean = false
+    ) {
         this.pid = id
         this.displayName = displayName
         this.lobbyLeader = isLobbyLeader
@@ -55,7 +59,7 @@ export class PlayerInstance implements PlayerState {
             missed: this.missed,
             board: this.board,
             ready: this.ready,
-            lobbyLeader: this.lobbyLeader
+            lobbyLeader: this.lobbyLeader,
         }
     }
 }

@@ -29,7 +29,8 @@ export const JoinLobby = () => {
         } else {
             let message = ""
             if (name.length === 0) {
-                message = "Fill out the name field. You cannot have an empty name."
+                message =
+                    "Fill out the name field. You cannot have an empty name."
             } else {
                 message = "Fill out the lobby field."
             }
@@ -39,14 +40,31 @@ export const JoinLobby = () => {
 
     return (
         <div className="joinLobby">
-            <TextInput value={name} onChange={(e) => setName(e.target.value)} label="Display Name" />
-            <TextInput value={lobbyId} onChange={(e) => setLobbyId(e.target.value)} label="Lobby ID" />
-            <div style={{
-                display: "flex",
-                flexDirection: "row"
-            }}>
-                <Button to="/" style={{ marginRight: ".25rem", textAlign: "center" }}>Back</Button>
-                <Button onClick={handleSubmit} style={{ marginLeft: ".25rem" }}>Join Game</Button>
+            <TextInput
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                label="Display Name"
+            />
+            <TextInput
+                value={lobbyId}
+                onChange={(e) => setLobbyId(e.target.value)}
+                label="Lobby ID"
+            />
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                }}
+            >
+                <Button
+                    to="/"
+                    style={{ marginRight: ".25rem", textAlign: "center" }}
+                >
+                    Back
+                </Button>
+                <Button onClick={handleSubmit} style={{ marginLeft: ".25rem" }}>
+                    Join Game
+                </Button>
             </div>
         </div>
     )

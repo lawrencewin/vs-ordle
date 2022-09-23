@@ -13,15 +13,23 @@ interface ButtonProps {
 export const Button = (props: PropsWithChildren<ButtonProps>) => {
     const { to, className, ...rest } = props
     if (to) {
-        return <Link 
-            to={to} 
-            className={"uiButton" + (className ? " " + className : "")}
-            {...rest}
-        >{props.children}</Link>
+        return (
+            <Link
+                to={to}
+                className={"uiButton" + (className ? " " + className : "")}
+                {...rest}
+            >
+                {props.children}
+            </Link>
+        )
     } else {
-        return <button 
-            {...rest}
-            className={"uiButton" + (className ? " " + className : "")}
-        >{props.children}</button>
+        return (
+            <button
+                {...rest}
+                className={"uiButton" + (className ? " " + className : "")}
+            >
+                {props.children}
+            </button>
+        )
     }
 }

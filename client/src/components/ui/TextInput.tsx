@@ -17,20 +17,29 @@ export const TextInput = (props: TextInputProps) => {
 
     const id = useRandID(label ? 12 : 0)
 
-    const inputEl = <input 
+    const inputEl = (
+        <input
             id={label ? id : undefined}
-            type="text" 
+            type="text"
             className="uiTextInput"
             {...rest}
         />
+    )
 
     if (id.length > 0) {
-        return <div className="uiInputGroup" style={{
-            ...rest.groupStyle
-        }}>
-            <label htmlFor={id} style={rest.labelStyle}>{label}</label>
-            { inputEl }
-        </div>
+        return (
+            <div
+                className="uiInputGroup"
+                style={{
+                    ...rest.groupStyle,
+                }}
+            >
+                <label htmlFor={id} style={rest.labelStyle}>
+                    {label}
+                </label>
+                {inputEl}
+            </div>
+        )
     } else {
         return inputEl
     }

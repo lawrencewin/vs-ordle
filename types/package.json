@@ -1,9 +1,9 @@
 {
-  "name": "vsordle-types",
-  "version": "1.0.21",
-  "main": "index.js",
-  "license": "MIT",
-  "dependencies": {
-    "typescript": "^4.7.4"
-  }
+    "name": "vsordle-types",
+    "version": "1.0.21",
+    "main": "index.js",
+    "license": "MIT",
+    "dependencies": {
+        "typescript": "^4.7.4"
+    }
 }

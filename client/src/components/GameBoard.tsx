@@ -1,5 +1,11 @@
 import { useState, useEffect, useContext } from "react"
-import { Board, BoardAnimation, BoardRow, BoardSpace, Letter } from "vsordle-types"
+import {
+    Board,
+    BoardAnimation,
+    BoardRow,
+    BoardSpace,
+    Letter,
+} from "vsordle-types"
 import { boardSpaceStatusToString } from "../utils"
 import { Particles } from "./Particles"
 import "./GameBoard.scss"

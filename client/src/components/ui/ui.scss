@@ -24,7 +24,7 @@ a.uiButton {
     font-weight: 700;
     width: 90%;
     cursor: pointer;
-    transition: all .25s ease;
+    transition: all 0.25s ease;
 
     &:hover {
         background: imports.$dark-grey;
@@ -55,7 +55,7 @@ a.uiButton {
         font-size: 16px;
         color: imports.$white-3;
         font-weight: 700;
-        padding: .5rem 1rem .5rem 0;
+        padding: 0.5rem 1rem 0.5rem 0;
         white-space: nowrap;
         text-align: left;
         width: 100%;
@@ -67,14 +67,14 @@ a.uiButton {
     }
 }
 
-.uiTextInput, .uiNumberInput__field {
+.uiTextInput,
+.uiNumberInput__field {
     @include clearInput;
     padding: 4px;
     display: block;
     width: 100%;
     font-size: 1.25rem;
 }
-
 
 .uiNumberInput {
     display: flex;
@@ -83,7 +83,7 @@ a.uiButton {
 
     .uiNumberInput__field {
         flex: 1;
-        margin-right: .25rem;
+        margin-right: 0.25rem;
     }
 
     .uiNumberInput__buttons {
@@ -99,10 +99,10 @@ a.uiButton {
     .uiNumberInput__button {
         @include clearInput;
         font-weight: 700;
-        font-size: .5rem;
-        padding: 0 .25rem;
+        font-size: 0.5rem;
+        padding: 0 0.25rem;
         flex: 1;
-        transition: all .25s ease;
+        transition: all 0.25s ease;
 
         &:nth-child(1) {
             margin-bottom: 1px;
@@ -114,7 +114,7 @@ a.uiButton {
             vertical-align: top;
         }
 
-        svg { 
+        svg {
             width: 12px;
             height: 8px;
         }
@@ -128,14 +128,13 @@ a.uiButton {
             border-color: imports.$light-grey;
         }
     }
-
 }
 
 .loadingSpinner {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-    border-width: .125rem;
+    border-width: 0.125rem;
     border-style: solid;
     border-color: imports.$white-1;
     border-left-color: imports.$light-grey;
@@ -143,6 +142,10 @@ a.uiButton {
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

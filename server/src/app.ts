@@ -6,11 +6,13 @@ import gameRouter from "./routes/gameRouter"
 import { bindGameToSocket } from "./game/io"
 
 const app = express()
-app.use(cors({
-    origin: true,
-    methods: ["GET", "POST"],
-    credentials: true
-}))
+app.use(
+    cors({
+        origin: true,
+        methods: ["GET", "POST"],
+        credentials: true,
+    })
+)
 app.use(gameRouter)
 
 const server = createServer(app)
@@ -19,7 +21,7 @@ const io = new Server(server, {
     cors: {
         origin: true,
         methods: ["GET", "POST"],
-        credentials: true
+        credentials: true,
     },
 })
 
@@ -32,7 +34,5 @@ io.on("connection", (socket) => {
 
     socket.join("outside_lobby")
 })
-
-
 
 server.listen(8080, () => console.log("Listening on 8080"))

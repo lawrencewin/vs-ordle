@@ -1,7 +1,7 @@
 .createLobby {
     width: 90%;
     max-width: 500px;
-    margin: .5rem auto;
+    margin: 0.5rem auto;
     display: flex;
     flex-direction: column;
 
@@ -11,8 +11,12 @@
 
         .numberInputs__input {
             flex: 1;
-            &:nth-child(1) { margin-right: .25rem; }
-            &:nth-child(2) { margin-left: .25rem; }
+            &:nth-child(1) {
+                margin-right: 0.25rem;
+            }
+            &:nth-child(2) {
+                margin-left: 0.25rem;
+            }
         }
     }
 }
@@ -22,7 +26,9 @@
         .numberInputs {
             flex-direction: column;
 
-            .numberInputs__input { margin: .5rem 0; }
+            .numberInputs__input {
+                margin: 0.5rem 0;
+            }
         }
     }
 }

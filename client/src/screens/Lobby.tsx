@@ -1,4 +1,8 @@
-import { ConnectedGameContextInterface, GameContextInterface, PlayerState } from "vsordle-types"
+import {
+    ConnectedGameContextInterface,
+    GameContextInterface,
+    PlayerState,
+} from "vsordle-types"
 import { Button } from "../components"
 import * as Network from "../Network"
 import { ReactComponent as StarSVG } from "../assets/star-fill.svg"
@@ -10,33 +14,45 @@ import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { isEmpty } from "lodash"
 
-const LobbyTableItem = (props: { name: string, ready: boolean, showLeaderCommands: boolean, me: boolean }) => {
+const LobbyTableItem = (props: {
+    name: string
+    ready: boolean
+    showLeaderCommands: boolean
+    me: boolean
+}) => {
     return (
         <div className="lobbyTableItem">
             <div className="playerName">
                 {props.me && <StarSVG />} {props.name}
             </div>
-            { (props.showLeaderCommands && !props.me) && (
+            {props.showLeaderCommands && !props.me && (
                 <div className="leaderCommands">
                     <button>
                         <KickPlayerSVG />
                     </button>
                 </div>
-            ) }
+            )}
             <div className="readyStatus">
-                { props.ready ? <CheckmarkSVG className="check" /> : <XSVG className="x" /> }
+                {props.ready ? (
+                    <CheckmarkSVG className="check" />
+                ) : (
+                    <XSVG className="x" />
+                )}
             </div>
         </div>
     )
 }
 
-const LobbyTable = (props: { players: { [pid: string]: PlayerState}, me: string }) => {
+const LobbyTable = (props: {
+    players: { [pid: string]: PlayerState }
+    me: string
+}) => {
     const { players, me } = props
     return (
         <div className="lobbyTable">
-            { Object.values(players).map((player, i) => {
+            {Object.values(players).map((player, i) => {
                 return (
-                    <LobbyTableItem 
+                    <LobbyTableItem
                         name={player.displayName}
                         ready={player.ready}
                         showLeaderCommands={players[me].lobbyLeader}
@@ -44,16 +60,18 @@ const LobbyTable = (props: { players: { [pid: string]: PlayerState}, me: string 
                         key={i}
                     />
                 )
-            }) }
+            })}
         </div>
     )
 }
 
-export const Lobby = (props: GameContextInterface | ConnectedGameContextInterface) => {
+export const Lobby = (
+    props: GameContextInterface | ConnectedGameContextInterface
+) => {
     const { gameState, setGameState } = props
     const navigate = useNavigate()
 
-    const notInLobby = !gameState || (isEmpty(gameState.players))
+    const notInLobby = !gameState || isEmpty(gameState.players)
 
     useEffect(() => {
         if (notInLobby) {
@@ -112,13 +130,19 @@ export const Lobby = (props: GameContextInterface | ConnectedGameContextInterfac
                 <LobbyTable players={players} me={me} />
                 <div className="lobbyActions">
                     <Button onClick={onLeaveClick}>Leave</Button>
-                    <Button onClick={onReadyClick}>{
-                        players[me].ready ? "Cancel" : "Ready"
-                    }</Button>
-                    { players[me].lobbyLeader && <Button disabled={!allPlayersReady} onClick={onStartClick}>Start Game</Button> }
+                    <Button onClick={onReadyClick}>
+                        {players[me].ready ? "Cancel" : "Ready"}
+                    </Button>
+                    {players[me].lobbyLeader && (
+                        <Button
+                            disabled={!allPlayersReady}
+                            onClick={onStartClick}
+                        >
+                            Start Game
+                        </Button>
+                    )}
                 </div>
             </div>
         )
     }
 }
-

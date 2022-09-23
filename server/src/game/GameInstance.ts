@@ -1,4 +1,16 @@
-import { GameRules, ServerGameState, GameStatus, PlayerState, ClientGameState, PlayerID, BoardSpace, GuessResult, PlayerStatus, PlayerUpdateType, PlayerUpdate } from "vsordle-types"
+import {
+    GameRules,
+    ServerGameState,
+    GameStatus,
+    PlayerState,
+    ClientGameState,
+    PlayerID,
+    BoardSpace,
+    GuessResult,
+    PlayerStatus,
+    PlayerUpdateType,
+    PlayerUpdate,
+} from "vsordle-types"
 import { VALID_WORDS, VALID_GUESSES } from "./words"
 import { PlayerInstance } from "./PlayerInstance"
 import { range } from "lodash"
@@ -13,9 +25,9 @@ export class GameInstance implements ServerGameState {
     rules: GameRules
     sortedPids: PlayerID[]
     totalPlayers: number
-    words: { 
-        main: string[] 
-        reserve: string[] 
+    words: {
+        main: string[]
+        reserve: string[]
     }
     hasStarted: boolean
     status: GameStatus
@@ -26,13 +38,13 @@ export class GameInstance implements ServerGameState {
     constructor(lobbyId: string, rules: GameRules) {
         this.lobbyId = lobbyId
         this.rules = rules
-        
+
         this.players = {}
         this.sortedPids = []
         this.totalPlayers = 0
         this.words = {
             main: [],
-            reserve: []
+            reserve: [],
         }
         this.hasStarted = false
         this.status = "lobby"
@@ -46,10 +58,21 @@ export class GameInstance implements ServerGameState {
             return false
         }
         for (const pid in this.players) {
-            if (!this.players[pid].ready) 
-                return false
+            if (!this.players[pid].ready) return false
         }
         return true
+    }
+
+    get playersPlaying(): PlayerID[] {
+        let numPlaying = 0
+        const playersPlaying: PlayerID[] = []
+        for (const pid in this.players) {
+            if (this.players[pid].status === PlayerStatus.playing) {
+                numPlaying += 1
+                playersPlaying.push(pid)
+            }
+        }
+        return playersPlaying
     }
 
     addPlayer(id: string, name: string) {
@@ -71,9 +94,10 @@ export class GameInstance implements ServerGameState {
     start(timeLimit: number = 300, onTimeLimitReached?: () => void): boolean {
         if (!this.canStart) {
             return false
-        } 
+        }
         // generate words
-        const mainIndices: number[] = [], reserveIndices: number[] = []
+        const mainIndices: number[] = [],
+            reserveIndices: number[] = []
         for (let i = 0; i < this.rules.wordCount; i++) {
             let idx = Math.floor(Math.random() * VALID_WORDS.length)
             while (mainIndices.includes(idx)) {
@@ -109,6 +133,27 @@ export class GameInstance implements ServerGameState {
         return true
     }
 
+    async reSortPids() {
+        await this.sortLock.runExclusive(() => {
+            this.sortedPids.sort((a, b) => {
+                const p1 = this.players[a]
+                const p2 = this.players[b]
+                let diff = p1.status - p2.status
+                if (diff === 0) {
+                    diff = p2.solved - p1.solved
+                    if (diff === 0) {
+                        diff = p1.missed - p2.missed
+                    }
+                }
+                return diff
+            })
+            this.sortedPids.forEach((pid, i) => {
+                const player = this.players[pid]
+                player.position = i + 1
+            })
+        })
+    }
+
     async submitGuess(pid: string, guess: string): Promise<GuessResult> {
         const me = this.players[pid]
         const guessResult = this.getGuessResult(me.currWord, guess)
@@ -129,37 +174,29 @@ export class GameInstance implements ServerGameState {
             if (me.solved === this.rules.wordCount) {
                 update = {
                     type: "won",
-                    pid: pid
+                    pid: pid,
+                    solved: me.solved,
                 }
+                me.status = PlayerStatus.done
             } else {
                 me.currWord = this.words.main[me.solved]
                 me.board = PlayerInstance.cleanBoard()
                 me.guesses = 0
                 // sort pids
-                await this.sortLock.runExclusive(() => {
-                    this.sortedPids.sort((a, b) => {
-                        const p1 = this.players[a]
-                        const p2 = this.players[b]
-                        return p2.solved - p1.solved
-                    })
-                    this.sortedPids.forEach((pid, i) => {
-                        const player = this.players[pid]
-                        player.position = i + 1
-                    })
-                })
+                await this.reSortPids()
                 update = {
                     type: "solved",
                     pid: pid,
                     board: me.board,
                     solved: me.solved,
-                    sortedPids: this.sortedPids
+                    sortedPids: this.sortedPids,
                 }
             }
         } else if (me.guesses < this.rules.allowedGuesses) {
             update = {
                 type: "continue_guessing",
                 pid: pid,
-                board: me.board
+                board: me.board,
             }
         } else {
             // miss
@@ -168,6 +205,7 @@ export class GameInstance implements ServerGameState {
                     type: "lost",
                     pid: pid,
                 }
+                me.status = PlayerStatus.dead
             } else {
                 me.board = PlayerInstance.cleanBoard()
                 me.currWord = this.words.reserve[me.missed]
@@ -178,7 +216,7 @@ export class GameInstance implements ServerGameState {
                     pid: pid,
                     board: me.board,
                     missed: me.missed,
-                    sortedPids: this.sortedPids
+                    sortedPids: this.sortedPids,
                 }
             }
         }
@@ -194,7 +232,7 @@ export class GameInstance implements ServerGameState {
 
     private getGuessResult(currWord: string, guess: string): BoardSpace[] {
         const ret: BoardSpace[] = []
-        // first get letter freqs of curr word 
+        // first get letter freqs of curr word
         const wordFreqs: { [c: string]: number } = {}
         for (const c of currWord) {
             wordFreqs[c] = wordFreqs[c] ? wordFreqs[c] + 1 : 1
@@ -228,7 +266,7 @@ export class GameInstance implements ServerGameState {
             totalPlayers: this.totalPlayers,
             words: this.words,
             hasStarted: this.hasStarted,
-            status: this.status
+            status: this.status,
         }
     }
 
@@ -244,8 +282,7 @@ export class GameInstance implements ServerGameState {
             sortedPids: this.sortedPids,
             totalPlayers: this.totalPlayers,
             me: pid,
-            status: this.status
+            status: this.status,
         }
     }
-
 }
