@@ -38,7 +38,6 @@ function randString(n: number = 8) {
 function playerIsAlreadyInGame(id: string) {
     for (const gameId in GAMES) {
         if (GAMES[gameId].hasPlayer(id)) {
-            console.log(GAMES[gameId].serialized())
             return true
         }
     }
@@ -47,17 +46,6 @@ function playerIsAlreadyInGame(id: string) {
 
 export function bindGameToSocket(io: Server, socket: Socket) {
     const emitToSelf = (update: GameUpdate) => {
-        console.log("To player", socket.id)
-        console.log(
-            JSON.stringify(
-                update,
-                (k, v) => {
-                    if (v instanceof Array) return JSON.stringify(v)
-                    return v
-                },
-                2
-            )
-        )
         socket.emit("game_update", update)
     }
     const emitToLobby = (
@@ -69,25 +57,12 @@ export function bindGameToSocket(io: Server, socket: Socket) {
         if (except) {
             broadcast = broadcast.except(except)
         }
-        console.log("To lobby:", lobbyId)
-        console.log(
-            JSON.stringify(
-                update,
-                (_, v) => {
-                    if (v instanceof Array) return JSON.stringify(v)
-                    return v
-                },
-                2
-            )
-        )
         broadcast.emit("game_update", update)
     }
 
     const endGameIfNeeded = (lobbyId: string) => {
         const game = GAMES[lobbyId]
         const remainingPlayers = game.playersPlaying
-        console.log(remainingPlayers)
-        console.log(game.players)
         if (remainingPlayers.length === 1) {
             // change game status + kill whoever is left
             const pid = remainingPlayers[0]
@@ -175,7 +150,6 @@ export function bindGameToSocket(io: Server, socket: Socket) {
             socket.join(lobbyId)
             socket.leave("outside_lobby")
             // emit event and return success
-            console.log("success")
             callback(GAMES[lobbyId].clientSerialized(socket.id))
             emitToSelf({
                 type: "lobby_joined",
@@ -329,8 +303,6 @@ export function bindGameToSocket(io: Server, socket: Socket) {
                     ["won", "lost"].includes(result.update.type)
                 ) {
                     endGameIfNeeded(lobbyId)
-                } else {
-                    console.log("Don't end game :9")
                 }
             } else {
                 callback({

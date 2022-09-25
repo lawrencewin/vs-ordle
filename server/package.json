@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon src/app.ts",
+    "clean": "rm -r dist/*",
     "build": "tsc"
   },
   "dependencies": {
