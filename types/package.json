@@ -1,9 +1,14 @@
 {
     "name": "vsordle-types",
     "version": "1.0.21",
-    "main": "index.ts",
+    "main": "dist/index.js",
     "license": "MIT",
     "dependencies": {
         "typescript": "^4.7.4"
+    },
+    "type": "commonjs",
+    "scripts": {
+        "clean-windows": "rmdir /q /s dist && mkdir dist",
+        "build": "tsc"
     }
 }
