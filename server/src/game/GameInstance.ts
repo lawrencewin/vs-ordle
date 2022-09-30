@@ -8,12 +8,10 @@ import {
     BoardSpace,
     GuessResult,
     PlayerStatus,
-    PlayerUpdateType,
     PlayerUpdate,
 } from "vsordle-types"
 import { VALID_WORDS, VALID_GUESSES } from "./words"
 import { PlayerInstance } from "./PlayerInstance"
-import { range } from "lodash"
 import { Mutex } from "async-mutex"
 
 const WORD_SET = new Set(VALID_WORDS)
@@ -123,7 +121,9 @@ export class GameInstance implements ServerGameState {
         const intervalId = setInterval(() => {
             if (this.gameTime === timeLimit) {
                 clearInterval(intervalId)
-                if (onTimeLimitReached) onTimeLimitReached()
+                if (onTimeLimitReached) {
+                    onTimeLimitReached()
+                }
             } else {
                 this.gameTime += 1
             }
@@ -231,23 +231,27 @@ export class GameInstance implements ServerGameState {
     }
 
     private getGuessResult(currWord: string, guess: string): BoardSpace[] {
-        const ret: BoardSpace[] = []
+        const ret: BoardSpace[] = [...Array(5)].map(() => BoardSpace.incorrect)
         // first get letter freqs of curr word
-        const wordFreqs: { [c: string]: number } = {}
+        const charFreqsOfCurr: { [c: string]: number } = {}
         for (const c of currWord) {
-            wordFreqs[c] = wordFreqs[c] ? wordFreqs[c] + 1 : 1
+            charFreqsOfCurr[c] = charFreqsOfCurr[c] ? charFreqsOfCurr[c] + 1 : 1
         }
-        const guessFreqs: { [c: string]: number } = {}
-        // determine color by comparing frequencies to letters
+        // 2 passes - one for correct and one for partial
         for (let i = 0; i < 5; i++) {
             const char = guess[i]
-            guessFreqs[char] = guessFreqs[char] ? guessFreqs[char] + 1 : 1
             if (char === currWord[i]) {
-                ret.push(BoardSpace.correct)
-            } else if (wordFreqs[char] && guessFreqs[char] <= wordFreqs[char]) {
-                ret.push(BoardSpace.partial)
-            } else {
-                ret.push(BoardSpace.incorrect)
+                ret[i] = BoardSpace.correct
+                // take away from existing freqs for reasons
+                charFreqsOfCurr[char] -= 1
+            }
+        }
+        // for partial - if char exists in remaining freqs, mark it and update freqs
+        for (let i = 0; i < 5; i++) {
+            const char = guess[i]
+            if (char in charFreqsOfCurr && charFreqsOfCurr[char] > 0) {
+                ret[i] = BoardSpace.partial
+                charFreqsOfCurr[char] -= 1
             }
         }
         return ret
