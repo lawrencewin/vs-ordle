@@ -82,7 +82,6 @@ export const Lobby = (
     if (notInLobby) {
         return null
     } else {
-        console.log(gameState)
         const { players, me, totalPlayers } = gameState!
 
         let allPlayersReady = totalPlayers > 1

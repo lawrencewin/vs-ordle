@@ -5,8 +5,8 @@ import {
     GameUpdate,
     PlayerID,
     GuessResult,
-    PlayerStatus,
     PlayerUpdate,
+    PlayerUpdateType,
 } from "vsordle-types"
 import { GameInstance } from "./GameInstance"
 
@@ -18,10 +18,12 @@ game_events: won, solved, missed, continue_guessing, lost, error
 
 export const PLAYERS_TO_LOBBY: { [pid: PlayerID]: string } = {}
 export const GAMES: { [lobby_id: string]: GameInstance } = {}
-const DEFAULT_RULES = {
+const DEFAULT_RULES: GameRules = {
     allowedGuesses: 6,
     wordCount: 7,
     missCount: 3,
+    hardMode: false,
+    uniqueStartingWords: false,
 }
 
 const RAND_STRING_CHOICES =
@@ -72,12 +74,12 @@ export function bindGameToSocket(io: Server, socket: Socket) {
                 game.totalPlayers === 1
                     ? {
                           pid: pid,
-                          type: "won",
+                          type: PlayerUpdateType.won,
                           solved: remaining.solved,
                       }
                     : {
                           pid: pid,
-                          type: "lost",
+                          type: PlayerUpdateType.lost,
                       }
             emitToLobby(
                 {

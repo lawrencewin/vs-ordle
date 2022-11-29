@@ -12,37 +12,38 @@ export interface GuessError {
 }
 export type GuessResult = GuessResponse | GuessError
 
-export type PlayerUpdateType =
-    | "won"
-    | "solved"
-    | "missed"
-    | "continue_guessing"
-    | "lost"
+export const enum PlayerUpdateType {
+    won = "won",
+    solved = "solved",
+    missed = "missed",
+    continue_guessing = "continue_guessing",
+    lost = "lost",
+}
 export type PlayerUpdate =
     | {
           pid: PlayerID
-          type: "won"
+          type: PlayerUpdateType.won
           solved: number
       }
     | {
           pid: PlayerID
-          type: "lost"
+          type: PlayerUpdateType.lost
       }
     | {
           pid: PlayerID
-          type: "continue_guessing"
+          type: PlayerUpdateType.continue_guessing
           board: BoardSpace[][]
       }
     | {
           pid: PlayerID
-          type: "solved"
+          type: PlayerUpdateType.solved
           board: BoardSpace[][]
           sortedPids: PlayerID[]
           solved: number
       }
     | {
           pid: PlayerID
-          type: "missed"
+          type: PlayerUpdateType.missed
           board: BoardSpace[][]
           sortedPids: PlayerID[]
           missed: number

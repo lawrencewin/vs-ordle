@@ -22,11 +22,9 @@ function App() {
     useEffect(() => {
         game.connect("ws://localhost:8080", {
             onConnect: () => {
-                console.log("connected")
                 setConnected(true)
             },
             onDisconnect: () => {
-                console.log("disconnected")
                 setConnected(false)
             },
             onError: (err) => console.error(err),

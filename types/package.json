@@ -1,7 +1,7 @@
 {
     "name": "vsordle-types",
     "version": "1.0.21",
-    "main": "dist/index.js",
+    "main": "src/index.ts",
     "license": "MIT",
     "dependencies": {
         "typescript": "^4.7.4"

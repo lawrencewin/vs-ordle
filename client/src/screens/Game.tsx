@@ -16,8 +16,6 @@ export const Game = () => {
     let connectedToCorrectLobby =
         gameInterface.gameState?.lobbyId === lobbyIdFromURL
 
-    // console.log(gameInterface.gameState)
-
     useEffect(() => {
         if (connectedToCorrectLobby && gameInterface.gameState) {
             // // do stuff - bind handlers

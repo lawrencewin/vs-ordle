@@ -21,7 +21,6 @@ export const JoinLobby = () => {
                 setGameState(initState)
                 navigate(`/game/${lobbyId}`)
             } catch (error) {
-                console.log("fasdfa")
                 alert(`Error: ${JSON.stringify(error)}`)
             } finally {
                 hideLoadingOverlay()

@@ -5,17 +5,14 @@ import {
     PlayerState,
     ClientGameState,
     PlayerID,
-    BoardSpace,
     GuessResult,
     PlayerStatus,
     PlayerUpdate,
+    PlayerUpdateType,
 } from "vsordle-types"
-import { VALID_WORDS, VALID_GUESSES } from "./words"
+import { VALID_WORDS } from "./words"
 import { PlayerInstance } from "./PlayerInstance"
 import { Mutex } from "async-mutex"
-
-const WORD_SET = new Set(VALID_WORDS)
-const GUESS_SET = new Set(VALID_GUESSES)
 
 export class GameInstance implements ServerGameState {
     lobbyId: string
@@ -74,7 +71,7 @@ export class GameInstance implements ServerGameState {
     }
 
     addPlayer(id: string, name: string) {
-        this.players[id] = new PlayerInstance(id, name)
+        this.players[id] = new PlayerInstance(id, name, this.rules)
         this.sortedPids.push(id)
         this.totalPlayers += 1
     }
@@ -114,8 +111,7 @@ export class GameInstance implements ServerGameState {
         this.words.reserve = reserveIndices.map((j) => VALID_WORDS[j])
         // start game for each player
         for (const pid in this.players) {
-            this.players[pid].start()
-            this.players[pid].currWord = this.words.main[0]
+            this.players[pid].start(this.words.main[0])
         }
         // start game time
         const intervalId = setInterval(() => {
@@ -156,105 +152,75 @@ export class GameInstance implements ServerGameState {
 
     async submitGuess(pid: string, guess: string): Promise<GuessResult> {
         const me = this.players[pid]
-        const guessResult = this.getGuessResult(me.currWord, guess)
+        // insert logic for checking validity of hard mode / unique starter
+        try {
+            me.checkGuessValidity(guess)
+        } catch (error) {
+            return {
+                type: "fail",
+                error: "invalidGuess",
+                message: (error as Error).message,
+            }
+        }
         if (
             me.status === PlayerStatus.done ||
             me.status === PlayerStatus.dead
         ) {
             return { type: "fail", error: "gameOver" }
-        } else if (!this.isValidGuess(guess)) {
-            return { type: "fail", error: "invalidGuess" }
         }
-        // update board
-        me.board[me.guesses] = guessResult
-        me.guesses += 1
+        // submit guess and update board
+        const playerUpdateType = me.submitGuess(guess)
+        // update game state and return update
         let update: PlayerUpdate
-        if (guess === me.currWord) {
-            me.solved += 1
-            if (me.solved === this.rules.wordCount) {
+        switch (playerUpdateType) {
+            case PlayerUpdateType.won:
                 update = {
-                    type: "won",
+                    type: playerUpdateType,
                     pid: pid,
                     solved: me.solved,
                 }
-                me.status = PlayerStatus.done
-            } else {
-                me.currWord = this.words.main[me.solved]
-                me.board = PlayerInstance.cleanBoard()
-                me.guesses = 0
-                // sort pids
+                break
+            case PlayerUpdateType.solved:
+                me.resetForNewWord(this.words.main[me.solved])
                 await this.reSortPids()
                 update = {
-                    type: "solved",
+                    type: playerUpdateType,
                     pid: pid,
                     board: me.board,
                     solved: me.solved,
                     sortedPids: this.sortedPids,
                 }
-            }
-        } else if (me.guesses < this.rules.allowedGuesses) {
-            update = {
-                type: "continue_guessing",
-                pid: pid,
-                board: me.board,
-            }
-        } else {
-            // miss
-            if (me.missed === this.rules.missCount) {
+                break
+            case PlayerUpdateType.continue_guessing:
                 update = {
-                    type: "lost",
+                    type: playerUpdateType,
+                    pid: pid,
+                    board: me.board,
+                }
+                break
+            case PlayerUpdateType.lost:
+                update = {
+                    type: playerUpdateType,
                     pid: pid,
                 }
-                me.status = PlayerStatus.dead
-            } else {
-                me.board = PlayerInstance.cleanBoard()
-                me.currWord = this.words.reserve[me.missed]
-                me.guesses = 0
-                me.missed += 1
+                break
+            case PlayerUpdateType.missed:
+                me.resetForNewWord(this.words.reserve[me.missed])
                 update = {
-                    type: "missed",
+                    type: playerUpdateType,
                     pid: pid,
                     board: me.board,
                     missed: me.missed,
                     sortedPids: this.sortedPids,
                 }
-            }
+                break
+            default:
+                throw new Error("Invalid player update type.")
         }
         return {
             type: "success",
             update: update,
         }
-    }
-
-    isValidGuess(guess: string) {
-        return WORD_SET.has(guess) || GUESS_SET.has(guess)
-    }
-
-    private getGuessResult(currWord: string, guess: string): BoardSpace[] {
-        const ret: BoardSpace[] = [...Array(5)].map(() => BoardSpace.incorrect)
-        // first get letter freqs of curr word
-        const charFreqsOfCurr: { [c: string]: number } = {}
-        for (const c of currWord) {
-            charFreqsOfCurr[c] = charFreqsOfCurr[c] ? charFreqsOfCurr[c] + 1 : 1
-        }
-        // 2 passes - one for correct and one for partial
-        for (let i = 0; i < 5; i++) {
-            const char = guess[i]
-            if (char === currWord[i]) {
-                ret[i] = BoardSpace.correct
-                // take away from existing freqs for reasons
-                charFreqsOfCurr[char] -= 1
-            }
-        }
-        // for partial - if char exists in remaining freqs, mark it and update freqs
-        for (let i = 0; i < 5; i++) {
-            const char = guess[i]
-            if (char in charFreqsOfCurr && charFreqsOfCurr[char] > 0) {
-                ret[i] = BoardSpace.partial
-                charFreqsOfCurr[char] -= 1
-            }
-        }
-        return ret
     }
 
     serialized(): ServerGameState {

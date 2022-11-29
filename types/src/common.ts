@@ -60,4 +60,6 @@ export interface GameRules {
     allowedGuesses: number
     wordCount: number
     missCount: number
+    hardMode: boolean
+    uniqueStartingWords: boolean
 }

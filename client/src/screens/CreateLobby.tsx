@@ -33,6 +33,8 @@ export const CreateLobby = () => {
                     wordCount: wordCount,
                     missCount: missCount,
                     allowedGuesses: 6,
+                    hardMode: false,
+                    uniqueStartingWords: false,
                 })
                 setGameState(initState)
                 navigate(`/game/${initState.lobbyId}`)
